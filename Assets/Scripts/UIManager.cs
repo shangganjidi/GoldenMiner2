@@ -95,7 +95,7 @@ public class UIManager : MonoBehaviour {
                 TimeOverObj.SetActive(true);
                 TimeOverText.text = string.Format("训练结束，请休息30秒后，开始下一个训练。");
 
-                UScore = hlevel;
+                UScore = hlevel+1;
 
                 // 调用外部函数（参数为方法名、参数）
                 Application.ExternalCall("UnitySetJSData", UId, UTrunName, UTimeLeng, UScore);
@@ -243,6 +243,11 @@ public class UIManager : MonoBehaviour {
 
     public void SwitchClick()
     {
+        if (GameMode.level > hlevel)
+        {
+            hlevel = GameMode.level;
+        }
+
         GameMode.Instance.SwitchFunc();
         OpenCloseSwitchPanel();
     }
