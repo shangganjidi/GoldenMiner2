@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour {
 
     public Text timeText;
-    public Text nowMoneyText;
+    public Text nowMoneyText;  // 现在的金钱
     public Text targetMoneyText;
     public Text levelText;
 
@@ -34,6 +34,15 @@ public class UIManager : MonoBehaviour {
     public GameObject TimeOverObj;
     public Text TimeOverText;
     public Text levelText1;
+
+    #region 参数
+    private int hlevel;
+    private bool GameState = false;
+    public int UId;  // 用户ID
+    public string UTrunName = "GoldenMiner2";  // 训练名字
+    public double UTimeLeng = 5;  // 训练时长
+    public double UScore;  // 训练效果
+    #endregion
 
     void Awake() {
         startPanel = transform.Find("StartPanel").gameObject;
@@ -63,6 +72,7 @@ public class UIManager : MonoBehaviour {
 
     private void Start()
     {
+        GameState = true;
         //Screen.fullScreen = !Screen.fullScreen;
         Screen.fullScreen = true;
 
@@ -80,14 +90,42 @@ public class UIManager : MonoBehaviour {
         m_time -= Time.deltaTime;
         if (m_time <= 0)
         {
-            TimeOverObj.SetActive(true);
-            TimeOverText.text = string.Format("训练结束 请休息30秒 ");
+            if (GameState == true)
+            {
+                TimeOverObj.SetActive(true);
+                TimeOverText.text = string.Format("训练结束，请休息30秒后，开始下一个训练。");
+
+                UScore = hlevel;
+
+                // 调用外部函数（参数为方法名、参数）
+                Application.ExternalCall("UnitySetJSData", UId, UTrunName, UTimeLeng, UScore);
+
+                GameState = false;
+            }
         }
         else
         {
             minute = (int)m_time / 60;
             second = (int)m_time % 60;
             levelText1.text = string.Format("本项训练剩余时间：{0}:{1}", minute, second);
+        }
+
+        // Tab退出键
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            // 调用外部函数（参数为方法名、参数）
+            Application.ExternalCall("JSReBack");
+        }
+
+        // 测试键
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            m_time = 10;
+        }
+
+        if (Screen.fullScreen == false)
+        {
+            Screen.fullScreen = true;
         }
     }
 
@@ -117,10 +155,11 @@ public class UIManager : MonoBehaviour {
 
     public void BtnAddClick(Transform trans)
     {
-        Button restBtn = trans.Find("restBtn").GetComponent<Button>();
-        Button quitBtn = trans.Find("quitBtn").GetComponent<Button>();
+        //Button restBtn = trans.Find("restBtn").GetComponent<Button>();
+        Button restBtn = transform.Find("endPanel/restBtn").GetComponent<Button>();
+        //Button quitBtn = trans.Find("quitBtn").GetComponent<Button>();
         restBtn.onClick.AddListener(RestClick);
-        quitBtn.onClick.AddListener(QuitClick);
+        //quitBtn.onClick.AddListener(QuitClick);
     }
 
     public void UpdateTimeText(float time)
@@ -240,9 +279,21 @@ public class UIManager : MonoBehaviour {
     /// </summary>
     public void RestClick()
     {
-        float ii= m_time;
-        SceneManager.LoadScene(0);
-        m_time = ii;
+        //SceneManager.LoadScene(0);
+        GameMode.gameFraction = GameMode.tgameFraction - 3100;
+        if (GameMode.gameFraction < 0)
+        {
+            GameMode.gameFraction = 0;
+        }
+        if (GameMode.level > hlevel)
+        {
+            hlevel = GameMode.level;
+        }
+
+        setPanel.SetActive(false);
+        endPanel.SetActive(false);
+
+        GameMode.Instance.SwitchFunc2();
     }
 
     /// <summary>

@@ -8,13 +8,13 @@ public class GameMode : MonoBehaviour {
     bool isStart = true;
     public static GameMode Instance;
     [Header("当前训练分数")]
-    public int gameFraction;
+    public static int gameFraction;
     [Header("当前训练时间")]
     public int time;
     [Header("当前游戏目标分数")]
     public int passFraction;
     [Header("当前训练关卡数")]
-    public int level;
+    public static int level;
     public Dictionary<string, GameObject> tempLates;    //存储所有的道具预制体模板
     [HideInInspector]
     public string[] objNames;       //所有分数道具的物体名称
@@ -50,6 +50,8 @@ public class GameMode : MonoBehaviour {
     [HideInInspector]
     public Player player;        //玩家
 
+    public static int tgameFraction;  // 目标分数
+
     public Material lineMater;
 
 
@@ -71,8 +73,8 @@ public class GameMode : MonoBehaviour {
     void Start() {
         uIManager = GameObject.FindObjectOfType<UIManager>();
         player = FindObjectOfType<Player>();
-        targetFraction = new int[] { 3000, 4000, 5000, 7000, 9000, 12000 ,15000,20000,25000};
-        gameTimes = new int[] { 63, 65, 65, 70, 75, 85, 85, 90, 90 };
+        targetFraction = new int[] { 1500, 3000, 5000, 7500, 9000, 12000, 15000, 18000, 20000 };
+        gameTimes = new int[] { 35, 45, 45, 50, 60, 60, 70, 75, 80 };
         objNames = new string[] { "Diamonds", "gold", "goldTwo", "stoneOne", "stoneTwo" };
         fractionData = new int[] { 1000, 300, 500, 100, 150 };
         propName = new string[] { "explosive", "Potion" };
@@ -193,6 +195,18 @@ public class GameMode : MonoBehaviour {
         isStart = true;
     }
 
+    /// <summary>
+    /// 切换关卡方法2
+    /// </summary>
+    public void SwitchFunc2()
+    {
+        isPause = false;
+        isDouble = false;
+        SwitchLevel();
+        gameTime = gameTimes[level];
+        UpdateTargetVaule();
+        player.PlayStateRest();
+    }
 
     /// <summary>
     /// 读取并保存所有物体的预制体
