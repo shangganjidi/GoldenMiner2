@@ -147,7 +147,15 @@ public class GameMode : MonoBehaviour {
             if (gameTime < 0)
             {
                 isPause = true;
-                if (gameFraction > targetFraction[level])
+
+                int zfengshu = 0;
+
+                for(int ii=0;ii<=level;ii++)
+                {
+                    zfengshu += targetFraction[ii];
+                }
+
+                if (gameFraction > zfengshu)
                 {
                     uIManager.OpenCloseSwitchPanel();
                 }

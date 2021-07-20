@@ -9,17 +9,57 @@
     <script src="TemplateData/UnityProgress.js"></script>
     <script src="Build/UnityLoader.js"></script>
     <script>
-      var gameInstance = UnityLoader.instantiate("gameContainer", "Build/webgl.json", {onProgress: UnityProgress});
+      var unityInstance = UnityLoader.instantiate("unityContainer", "Build/webgl.json", {onProgress: UnityProgress});
+      // SetData
+        function UnitySetJSData(UId, UTrunName, UTimeLeng, UScore) {
+            //alert(UTrunName + "," + UTimeLeng + "," + UScore);
+		    unityInstance.SetFullscreen(0);
+            parent.PSetUnityDB(UTrunName, UTimeLeng, UScore);
+			//parent.btnPSetUnityDB(UId, UTrunName, UTimeLeng, UScore);
+        }
+        // 后退
+        function JSReBack() {
+
+            //"训练退出确认框", "", "确认退出", "取消退出"
+            var mymessage = confirm("为了保存本次训练记录，请确认你已看到训练结束提示！");
+            if (mymessage == true) {
+                unityInstance.SetFullscreen(0);
+                //alert("回退");
+                window.history.back();
+            }
+            else{
+                unityInstance.SetFullscreen(1);
+            }
+        }
+      // 放大后退
+      window.onload = function () {
+        /**
+         * 键盘事件不能绑定div，一般绑定给容易获取焦点的对象 eg：input
+         * onkeydown
+         *      - 按下按键,如果一直按着会一直触发
+         *      - 连续触发时，第一次和第二次间隔稍微长，以后就非常快
+         * onkeyup  松开按键，只会触发一次
+         */
+        document.onkeydown = function (event) {
+            event = event || window.event;
+            /**
+             * 通过keyCode属性返回的ASCII编码来判断按下的按键，注意区分大小写
+             * 事件单独提供了ctrlkey shiftkey altkey 用来判断ctrl、shift、alt是否被按下，
+             * 被按下时返回true
+             */
+            if (event.keyCode === 121){
+				unityInstance.SetFullscreen(1);
+            }
+            if (event.keyCode ===  27){
+				window.history.back();
+            }
+        };
+    };
     </script>
   </head>
   <body>
-    <div class="webgl-content">
-      <div id="gameContainer" style="width: 960px; height: 600px"></div>
-      <div class="footer">
-        <div class="webgl-logo"></div>
-        <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)"></div>
-        <div class="title">黄金矿工2</div>
-      </div>
+    <div class="webgl-content" style="width: 100%; height: 99%">
+      <div id="unityContainer" style="width: 100%; height: 100%"></div>
     </div>
   </body>
 </html>

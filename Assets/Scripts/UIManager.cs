@@ -118,12 +118,12 @@ public class UIManager : MonoBehaviour {
         }
 
         // 测试键
-        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        if (Input.GetKeyDown(KeyCode.RightAlt))
         {
             m_time = 10;
         }
 
-        if (Screen.fullScreen == false)
+        if (Screen.fullScreen == false  && GameState==true)
         {
             Screen.fullScreen = true;
         }
@@ -285,7 +285,7 @@ public class UIManager : MonoBehaviour {
     public void RestClick()
     {
         //SceneManager.LoadScene(0);
-        GameMode.gameFraction = GameMode.tgameFraction - 3100;
+        GameMode.gameFraction = GameMode.gameFraction - 3100;
         if (GameMode.gameFraction < 0)
         {
             GameMode.gameFraction = 0;
