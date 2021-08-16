@@ -236,5 +236,6 @@ public class Player : MonoBehaviour {
         isFire = false;
         isBack = false;
         RestMoveSpeed();
+
     }
 }

@@ -214,6 +214,12 @@ public class GameMode : MonoBehaviour {
         gameTime = gameTimes[level];
         UpdateTargetVaule();
         player.PlayStateRest();
+
+        SetSceneObjsColor(leftColor);
+        ModelValue.text = "左眼";
+        GouZiRender.material.color = rightColor;
+        GouZiLineRender.startColor = rightColor;
+        GouZiLineRender.endColor = rightColor;
     }
 
     /// <summary>
