@@ -17,7 +17,7 @@ public class UIManager : MonoBehaviour {
     public GameObject setPanel;
     public GameObject switchPanel;
 
-    public Button startBtn;
+    public Button startBtn, backBtn;
     public Button switchBtn;
 
     public Transform fractionPoint;
@@ -38,11 +38,13 @@ public class UIManager : MonoBehaviour {
     #region 参数
     private int hlevel;
     private bool GameState = false;
-    public int UId;  // 用户ID
-    public string UTrunName = "GoldenMiner2";  // 训练名字
-    public double UTimeLeng = 5;  // 训练时长
-    public double UScore;  // 训练效果
+    private int UId;  // 用户ID
+    private string UTrunName = "GoldenMiner2";  // 训练名字
+    private double UTimeLeng = 5;  // 训练时长
+    private double UScore;  // 训练效果
     #endregion
+    private float CountDown =4;
+    private bool ReckonState = false;
 
     void Awake() {
         startPanel = transform.Find("StartPanel").gameObject;
@@ -50,6 +52,7 @@ public class UIManager : MonoBehaviour {
         switchPanel = transform.Find("switchPanel").gameObject;
         switchBtn = transform.Find("switchPanel/switchBtn").GetComponent<Button>();
         startBtn = transform.Find("StartPanel/startBtn").GetComponent<Button>();
+        backBtn = transform.Find("StartPanel/backBtn").GetComponent<Button>();
         timeText = transform.Find("TipsPanel/timeText").GetComponent<Text>();
         nowMoneyText = transform.Find("TipsPanel/moneyText").GetComponent<Text>();
         targetMoneyText = transform.Find("TipsPanel/targetMoney").GetComponent<Text>();
@@ -63,6 +66,7 @@ public class UIManager : MonoBehaviour {
             bgPanel.SetActive(false);
         }
         startBtn.onClick.AddListener(StartClick);
+        backBtn.onClick.AddListener(BackClick);
         uIPrefabs = new Dictionary<string, GameObject>();
         prefabNames = new string[] { "fractionText", "boomUI" };
         boomObjs = new List<GameObject>();
@@ -73,6 +77,7 @@ public class UIManager : MonoBehaviour {
     private void Start()
     {
         GameState = true;
+        ReckonState = true;
         //Screen.fullScreen = !Screen.fullScreen;
         Screen.fullScreen = true;
 
@@ -90,17 +95,28 @@ public class UIManager : MonoBehaviour {
         m_time -= Time.deltaTime;
         if (m_time <= 0)
         {
-            if (GameState == true)
+            if (ReckonState == true)
             {
+                hlevel = hlevel + 1;
+                UScore = hlevel >= 5 ? 100 : 100 * hlevel / 5;  // 5关满分，4关优良，3关及格
                 TimeOverObj.SetActive(true);
-                TimeOverText.text = string.Format("训练结束，请休息30秒后，开始下一个训练。");
+                TimeOverText.text = string.Format(UScore.ToString());
+                ReckonState = false;
+            }
 
-                UScore = hlevel+1;
+            if (CountDown > 0)
+            {
+                CountDown -= Time.deltaTime;
+            }
+            else
+            {
+                if (GameState == true)
+                {
+                    // 调用外部函数（参数为方法名、参数）
+                    Application.ExternalCall("UnitySetJSData", UId, UTrunName, UTimeLeng, UScore);
 
-                // 调用外部函数（参数为方法名、参数）
-                Application.ExternalCall("UnitySetJSData", UId, UTrunName, UTimeLeng, UScore);
-
-                GameState = false;
+                    GameState = false;
+                }
             }
         }
         else
@@ -223,7 +239,11 @@ public class UIManager : MonoBehaviour {
         tipsPanel.SetActive(true);
         bgPanel.SetActive(true);
     }
-
+    public void BackClick()
+    {
+        // 调用外部函数（参数为方法名、参数）
+        Application.ExternalCall("JSReBack");
+    }
     /// <summary>
     /// 开启与关闭切换面版
     /// </summary>
